@@ -10,14 +10,16 @@ phases:
       - aws --version
       - $(aws ecr get-login --region us-east-2 --no-include-email)
       - REPOSITORY_URI=842337631775.dkr.ecr.us-east-2.amazonaws.com/anthony-ecr-repo
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG=${COMMIT_HASH:=latest}
   build:
     run-as: Linux-user-name
     commands:
       - echo Building Docker Image...
-      - docker build -t anthony-ecr-repo:$IMAGE_TAG . 
+      - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG .
+      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
       - docker run --name some-nginx -d -p 8080:80 whatever
-
   post_build:
     commands:
-      - docker push 842337631775.dkr.ecr.us-east-2.amazonaws.com/anthony-ecr-repo:$IMAGE_TAG
-
+      - docker push $REPOSITORY_URI:latest
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
