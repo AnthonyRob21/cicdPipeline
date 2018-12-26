@@ -13,12 +13,10 @@ phases:
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - IMAGE_TAG=${COMMIT_HASH:=latest}
   build:
-    run-as: Linux-user-name
     commands:
       - echo Building Docker Image...
       - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG .
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
-      - docker run --name some-nginx -d -p 8080:80 whatever
   post_build:
     commands:
       - docker push $REPOSITORY_URI:latest
