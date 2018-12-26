@@ -4,3 +4,20 @@ phases:
     commands:
       - ls -lha
       - printenv
+  pre_build:
+    commands:
+      - echo.Logging in to Amazon ECR...
+      - aws --version
+      - $(aws ecr get-login --region us-east-2 --no-include-email)
+      - REPOSITORY_URI=842337631775.dkr.ecr.us-east-2.amazonaws.com/anthony-ecr-repo
+  build:
+    run-as: Linux-user-name
+    commands:
+      - echo Building Docker Image...
+      - docker build -t anthony-ecr-repo:$IMAGE_TAG . 
+      - docker run --name some-nginx -d -p 8080:80 whatever
+
+  post_build:
+    commands:
+      - docker push 842337631775.dkr.ecr.us-east-2.amazonaws.com/anthony-ecr-repo:$IMAGE_TAG
+
