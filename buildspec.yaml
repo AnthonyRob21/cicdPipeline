@@ -17,3 +17,4 @@ phases:
   post_build:
     commands:
       - docker push 842337631775.dkr.ecr.us-east-2.amazonaws.com/anthony-ecr-repo:latest
+      - kubectl run --image=842337631775.dkr.ecr.us-east-2.amazonaws.com/anthony-ecr-repo:latest --env="DOMAIN=anthony-EKS"
